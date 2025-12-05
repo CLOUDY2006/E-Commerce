@@ -19,24 +19,25 @@ export default function App() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  // ✅ FETCH PRODUCTS FROM BACKEND
+  // ✅ FETCH PRODUCTS
   useEffect(() => {
     fetch(`${API_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
-        const formatted = data.map((product: any) => ({
-          id: product._id,
-          name: product.name,
-          price: product.price,
-          description: product.description,
-          image: product.image
-        }));
-        setProducts(formatted);
+        setProducts(
+          data.map((product: any) => ({
+            id: product._id,
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            image: product.image
+          }))
+        );
       })
       .catch((err) => console.log("Error fetching products:", err));
   }, []);
 
-  // ✅ ADD PRODUCT (POST to backend)
+  // ✅ ADD PRODUCT
   const handleAddProduct = (product: Omit<Product, 'id'>) => {
     fetch(`${API_URL}/api/products`, {
       method: "POST",
@@ -44,13 +45,21 @@ export default function App() {
       body: JSON.stringify(product)
     })
       .then((res) => res.json())
-      .then((newProduct) => {
-        setProducts([...products, newProduct]);
+      .then((result) => {
+        const mappedProduct = {
+          id: result.product._id,
+          name: result.product.name,
+          price: result.product.price,
+          description: result.product.description,
+          image: result.product.image,
+        };
+        
+        setProducts([...products, mappedProduct]);
         setIsFormOpen(false);
       });
   };
 
-  // ✅ UPDATE PRODUCT (PUT to backend)
+  // ✅ UPDATE PRODUCT
   const handleUpdateProduct = (updatedProduct: Product) => {
     fetch(`${API_URL}/api/products/${updatedProduct.id}`, {
       method: "PUT",
@@ -58,8 +67,16 @@ export default function App() {
       body: JSON.stringify(updatedProduct)
     })
       .then((res) => res.json())
-      .then((productFromDB) => {
-        setProducts(products.map(p => p.id === productFromDB.id ? productFromDB : p));
+      .then((updatedFromDB) => {
+        const mappedProduct = {
+          id: updatedFromDB._id,
+          name: updatedFromDB.name,
+          price: updatedFromDB.price,
+          description: updatedFromDB.description,
+          image: updatedFromDB.image,
+        };
+
+        setProducts(products.map(p => p.id === mappedProduct.id ? mappedProduct : p));
         setEditingProduct(null);
         setIsFormOpen(false);
       });
@@ -67,11 +84,10 @@ export default function App() {
 
   // ✅ DELETE PRODUCT
   const handleDeleteProduct = (id: string) => {
-    fetch(`${API_URL}/api/products/${id}`, {
-      method: "DELETE"
-    }).then(() => {
-      setProducts(products.filter((p) => p.id !== id));
-    });
+    fetch(`${API_URL}/api/products/${id}`, { method: "DELETE" })
+      .then(() => {
+        setProducts(products.filter((p) => p.id !== id));
+      });
   };
 
   return (
@@ -79,14 +95,7 @@ export default function App() {
       <Header onAddClick={() => setIsFormOpen(true)} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProductList
-          products={products}
-          onEdit={(product) => {
-            setEditingProduct(product);
-            setIsFormOpen(true);
-          }}
-          onDelete={handleDeleteProduct}
-        />
+        <ProductList products={products} onEdit={setEditingProduct} onDelete={handleDeleteProduct} />
       </main>
 
       {isFormOpen && (
