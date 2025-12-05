@@ -24,49 +24,74 @@ router.get("/", async (req, res) => {
 });
 
 // 🟦 ADD product
-router.post("/", async (req, res) => {
-  try {
-    const product = new Product(req.body);
-    const saved = await product.save();
+const handleAddProduct = (product: Omit<Product, 'id'>) => {
+  fetch(`${API_URL}/api/products`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(product)
+  })
+    .then(res => res.json())
+    .then(result => {
+      const mappedProduct = {
+        id: result.product._id,
+        name: result.product.name,
+        price: result.product.price,
+        description: result.product.description,
+        image: result.product.image
+      };
 
-    // Return with id instead of _id
-    res.json({
-      id: saved._id,
-      name: saved.name,
-      price: saved.price,
-      description: saved.description,
-      image: saved.image
+      setProducts(prev => [...prev, mappedProduct]);
+      setIsFormOpen(false);
     });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+};
 
-// 🟧 UPDATE product
-router.put("/:id", async (req, res) => {
-  try {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
-    res.json({
-      id: updated._id,
-      name: updated.name,
-      price: updated.price,
-      description: updated.description,
-      image: updated.image
+
+// UPDATE PRODUCT
+const handleUpdateProduct = (updatedProduct: Product) => {
+  fetch(`${API_URL}/api/products/${updatedProduct.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatedProduct)
+  })
+    .then(res => res.json())
+    .then(result => {
+      const mappedProduct = {
+        id: result._id,
+        name: result.name,
+        price: result.price,
+        description: result.description,
+        image: result.image
+      };
+
+      setProducts(prev => prev.map(p => p.id === mappedProduct.id ? mappedProduct : p));
+      setEditingProduct(null);
+      setIsFormOpen(false);
     });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+};
+
 
 // 🟥 DELETE product
 router.delete("/:id", async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ message: "Product deleted" });
+    const id = req.params.id;
+
+    if (!id || id === "undefined") {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+
+    const deleted = await Product.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json({ message: "Product deleted", id });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ error: "Server error while deleting product" });
   }
 });
+
 
 export default router;
