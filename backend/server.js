@@ -6,30 +6,32 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+
+// Temporary open CORS (we will restrict later)
 app.use(
   cors({
-    origin: [
-      "https://e-commerce-e87k-7zcxemr9l-arnavs-projects-3dba0c33.vercel.app", 
-      "http://localhost:5173", // local development
-      "http://localhost:3000"
-    ],
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type"],
   })
 );
 
+// Parse JSON body
 app.use(express.json());
 
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => console.log("MongoDB Error:", err));
 
 // Routes
 import productRoutes from "./routes/productRoutes.js";
 app.use("/api/products", productRoutes);
 
-app.listen(5000, () => {
-  console.log("Backend running on http://localhost:5000");
+// Render requires dynamic PORT, not fixed 5000
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Backend running on port ${PORT}`);
 });
