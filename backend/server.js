@@ -9,7 +9,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://e-commerce-e87k.vercel.app/", // your deployed frontend
+      "https://e-commerce-e87k-7zcxemr9l-arnavs-projects-3dba0c33.vercel.app", 
       "http://localhost:5173", // local development
       "http://localhost:3000"
     ],
