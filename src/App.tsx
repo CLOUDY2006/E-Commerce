@@ -18,7 +18,7 @@ export default function App() {
 
   // ✅ FETCH PRODUCTS FROM BACKEND
 useEffect(() => {
-  fetch("http://localhost:5000/api/products")
+  fetch("https://e-commerce-b8jn.onrender.com/api/products")
     .then((res) => res.json())
     .then((data) => {
       const formatted = data.map((product: any) => ({
@@ -35,7 +35,7 @@ useEffect(() => {
 
   // ✅ ADD PRODUCT (POST to backend)
   const handleAddProduct = (product: Omit<Product, 'id'>) => {
-    fetch("http://localhost:5000/api/products", {
+    fetch("https://e-commerce-b8jn.onrender.com/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(product)
@@ -49,7 +49,7 @@ useEffect(() => {
 
   // ✅ UPDATE PRODUCT (PUT to backend)
   const handleUpdateProduct = (updatedProduct: Product) => {
-    fetch(`http://localhost:5000/api/products/${updatedProduct.id}`, {
+    fetch(`https://e-commerce-b8jn.onrender.com/api/products/${updatedProduct.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedProduct)
@@ -64,7 +64,7 @@ useEffect(() => {
 
   // ✅ DELETE PRODUCT (DELETE to backend)
   const handleDeleteProduct = (id: string) => {
-    fetch(`http://localhost:5000/api/products/${id}`, {
+    fetch(`https://e-commerce-b8jn.onrender.com/api/products/${id}`, {
       method: "DELETE"
     }).then(() => {
       setProducts(products.filter((p) => p.id !== id));
