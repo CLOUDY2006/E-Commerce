@@ -11,45 +11,48 @@ export interface Product {
   image: string;
 }
 
+// 🔥 Pull backend URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   // ✅ FETCH PRODUCTS FROM BACKEND
-useEffect(() => {
-  fetch("https://e-commerce-b8jn.onrender.com/api/products")
-    .then((res) => res.json())
-    .then((data) => {
-      const formatted = data.map((product: any) => ({
-        id: product._id,                 // <-- MAPPING GOES HERE
-        name: product.name,
-        price: product.price,
-        description: product.description,
-        image: product.image
-      }));
-      setProducts(formatted);
-    })
-    .catch((err) => console.log("Error fetching products:", err));
-}, []);
+  useEffect(() => {
+    fetch(`${API_URL}/api/products`)
+      .then((res) => res.json())
+      .then((data) => {
+        const formatted = data.map((product: any) => ({
+          id: product._id,
+          name: product.name,
+          price: product.price,
+          description: product.description,
+          image: product.image
+        }));
+        setProducts(formatted);
+      })
+      .catch((err) => console.log("Error fetching products:", err));
+  }, []);
 
   // ✅ ADD PRODUCT (POST to backend)
   const handleAddProduct = (product: Omit<Product, 'id'>) => {
-    fetch("https://e-commerce-b8jn.onrender.com/api/products", {
+    fetch(`${API_URL}/api/products`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(product)
     })
       .then((res) => res.json())
       .then((newProduct) => {
-        setProducts([...products, newProduct]); // Add to UI
+        setProducts([...products, newProduct]);
         setIsFormOpen(false);
       });
   };
 
   // ✅ UPDATE PRODUCT (PUT to backend)
   const handleUpdateProduct = (updatedProduct: Product) => {
-    fetch(`https://e-commerce-b8jn.onrender.com/api/products/${updatedProduct.id}`, {
+    fetch(`${API_URL}/api/products/${updatedProduct.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedProduct)
@@ -64,7 +67,7 @@ useEffect(() => {
 
   // ✅ DELETE PRODUCT (DELETE to backend)
   const handleDeleteProduct = (id: string) => {
-    fetch(`https://e-commerce-b8jn.onrender.com/api/products/${id}`, {
+    fetch(`${API_URL}/api/products/${id}`, {
       method: "DELETE"
     }).then(() => {
       setProducts(products.filter((p) => p.id !== id));
