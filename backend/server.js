@@ -9,7 +9,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://e-commerce-website-seven-theta.vercel.app", // your deployed frontend
+      "https://e-commerce-e87k.vercel.app/", // your deployed frontend
       "http://localhost:5173", // local development
       "http://localhost:3000"
     ],
