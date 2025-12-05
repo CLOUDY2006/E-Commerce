@@ -14,6 +14,15 @@ export interface Product {
   image: string;
 }
 
+// 🔥 Normalize DB object → Frontend format
+const normalizeProduct = (p: any): Product => ({
+  id: p._id || p.id, // <- IMPORTANT
+  name: p.name,
+  price: p.price,
+  description: p.description,
+  image: p.image
+});
+
 export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -24,14 +33,7 @@ export default function App() {
     fetch(`${API_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
-        const formatted = data.map((product: any) => ({
-          id: product._id,
-          name: product.name,
-          price: product.price,
-          description: product.description,
-          image: product.image
-        }));
-        setProducts(formatted);
+        setProducts(data.map(normalizeProduct));
       })
       .catch((err) => console.log("Error fetching products:", err));
   }, []);
@@ -41,19 +43,11 @@ export default function App() {
     fetch(`${API_URL}/api/products`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(product)
+      body: JSON.stringify(product),
     })
       .then((res) => res.json())
       .then((result) => {
-        const mappedProduct: Product = {
-          id: result.product._id,
-          name: result.product.name,
-          price: result.product.price,
-          description: result.product.description,
-          image: result.product.image,
-        };
-
-        setProducts(prev => [...prev, mappedProduct]);
+        setProducts(prev => [...prev, normalizeProduct(result.product)]);
         setIsFormOpen(false);
       });
   };
@@ -63,20 +57,12 @@ export default function App() {
     fetch(`${API_URL}/api/products/${updatedProduct.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedProduct)
+      body: JSON.stringify(updatedProduct),
     })
       .then((res) => res.json())
       .then((updatedFromDB) => {
-
-        const mappedProduct: Product = {
-          id: updatedFromDB._id,
-          name: updatedFromDB.name,
-          price: updatedFromDB.price,
-          description: updatedFromDB.description,
-          image: updatedFromDB.image,
-        };
-
-        setProducts(prev => prev.map(p => p.id === mappedProduct.id ? mappedProduct : p));
+        const updated = normalizeProduct(updatedFromDB);
+        setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
         setEditingProduct(null);
         setIsFormOpen(false);
       });
@@ -84,12 +70,11 @@ export default function App() {
 
   // DELETE PRODUCT
   const handleDeleteProduct = (id: string) => {
-    console.log("🗑️ Deleting ID:", id); // Debug
+    console.log("🗑️ Deleting product ID:", id);
 
     fetch(`${API_URL}/api/products/${id}`, { method: "DELETE" })
-      .then((res) => res.json())
       .then(() => {
-        setProducts(prev => prev.filter((p) => p.id !== id));
+        setProducts(prev => prev.filter(p => p.id !== id));
       });
   };
 
