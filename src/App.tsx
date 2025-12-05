@@ -3,6 +3,9 @@ import { ProductList } from './components/ProductList';
 import { ProductForm } from './components/ProductForm';
 import { Header } from './components/Header';
 
+// 🔥 Backend URL from Vercel environment variables
+const API_URL = import.meta.env.VITE_API_URL;
+
 export interface Product {
   id: string;
   name: string;
@@ -10,9 +13,6 @@ export interface Product {
   description: string;
   image: string;
 }
-
-// 🔥 Pull backend URL from environment variable
-const API_URL = import.meta.env.VITE_API_URL;
 
 export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -65,23 +65,13 @@ export default function App() {
       });
   };
 
-  // ✅ DELETE PRODUCT (DELETE to backend)
+  // ✅ DELETE PRODUCT
   const handleDeleteProduct = (id: string) => {
     fetch(`${API_URL}/api/products/${id}`, {
       method: "DELETE"
     }).then(() => {
       setProducts(products.filter((p) => p.id !== id));
     });
-  };
-
-  const handleEditClick = (product: Product) => {
-    setEditingProduct(product);
-    setIsFormOpen(true);
-  };
-
-  const handleCloseForm = () => {
-    setIsFormOpen(false);
-    setEditingProduct(null);
   };
 
   return (
@@ -91,7 +81,10 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ProductList
           products={products}
-          onEdit={handleEditClick}
+          onEdit={(product) => {
+            setEditingProduct(product);
+            setIsFormOpen(true);
+          }}
           onDelete={handleDeleteProduct}
         />
       </main>
@@ -100,7 +93,10 @@ export default function App() {
         <ProductForm
           product={editingProduct}
           onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}
-          onClose={handleCloseForm}
+          onClose={() => {
+            setIsFormOpen(false);
+            setEditingProduct(null);
+          }}
         />
       )}
     </div>
