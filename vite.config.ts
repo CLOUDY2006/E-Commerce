@@ -50,6 +50,10 @@
         '@': path.resolve(__dirname, './src'),
       },
     },
+    define: {
+    'process.env': process.env,  // 👈 THIS IS THE IMPORTANT LINE
+  },
+
     build: {
       target: 'esnext',
       outDir: 'build',
