@@ -21,7 +21,12 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
       
       <div className="p-4">
         <h3 className="text-gray-900 mb-2">{product.name}</h3>
-        <p className="text-blue-600 mb-2">₹{product.price.toFixed(2)}</p>
+
+        {/* 🛠 FIXED PRICE DISPLAY */}
+        <p className="text-blue-600 mb-2">
+          ₹{Number(product.price).toFixed(2)}
+        </p>
+
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
         
         <div className="flex gap-2">
@@ -32,6 +37,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
             <Edit2 className="w-4 h-4" />
             Edit
           </button>
+
           <button
             onClick={() => {
               if (window.confirm('Are you sure you want to delete this product?')) {
