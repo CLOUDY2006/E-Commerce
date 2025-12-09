@@ -4,7 +4,8 @@ import { ProductForm } from './components/ProductForm';
 import { Header } from './components/Header';
 
 // TEMP: Hardcoded backend until Vercel env is working
-const API_URL = "https://e-commerce-b8jn.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://e-commerce-b8jn.onrender.com";
+
 
 export interface Product {
   id: string;
