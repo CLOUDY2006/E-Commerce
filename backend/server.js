@@ -7,16 +7,16 @@ dotenv.config();
 
 const app = express();
 
-// Temporary open CORS (we will restrict later)
-app.use(cors({
-  origin: [
-    "https://e-commerce-e87k.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type"],
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://e-commerce-e87k.vercel.app",   
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 
 
 // Parse JSON body
