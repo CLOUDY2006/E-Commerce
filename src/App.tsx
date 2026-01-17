@@ -3,11 +3,11 @@ import { ProductList } from './components/ProductList';
 import { ProductForm } from './components/ProductForm';
 import { Header } from './components/Header';
 
-// TEMP: Hardcoded backend until Vercel env is working
-const API_URL =
-  typeof window !== "undefined" && window.location.hostname !== "localhost"
-    ? "https://e-commerce-b8jn.onrender.com"
-    : "http://localhost:5000";
+const API_URL = window.location.hostname === "localhost"
+  ? "http://localhost:5000"
+  : "https://e-commerce-b8jn.onrender.com";
+
+console.log("API URL →", API_URL); // Debug
 
 
 export interface Product {
