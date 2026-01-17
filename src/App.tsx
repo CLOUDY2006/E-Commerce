@@ -3,9 +3,8 @@ import { ProductList } from './components/ProductList';
 import { ProductForm } from './components/ProductForm';
 import { Header } from './components/Header';
 
-const API_URL = window.location.hostname === "localhost"
-  ? "http://localhost:5000"
-  : "https://e-commerce-b8jn.onrender.com";
+// 🔥 FINAL: force production backend
+const API_URL = "https://e-commerce-b8jn.onrender.com";
 
 console.log("API URL →", API_URL); // Debug
 
